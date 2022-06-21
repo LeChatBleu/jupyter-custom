@@ -119,16 +119,187 @@ require(["nbextensions/snippets_menu/main"], function (snippets_menu) {
     name: "scikit_learn",
     "sub-menu": [
       {
-        name: "SGDClassifier",
-        snippet: [
-          "from sklearn.linear_model import SGDClassifier",
-          "",
-          "sgd_clf = SGDClassifier()",
+        name: "pipeline",
+        "sub-menu": [
+          {
+            name: "Pipeline",
+            snippet: [
+              "from sklearn.pipeline import Pipeline",
+              "",
+              "polynomial_regression = Pipeline([",
+              "    ('poly_features', PolynomialFeatures(degree = 10, include_bias = False)),",
+              "    ('lin_reg', LinearRegression()),",
+              "])  # 2장? 3장? 참조해서 수정 필요",
+            ],
+          },
+        ],
+      },
+      {
+        name: "early stopping",
+        "sub-menu": [
+          {
+            name: "implementation",
+            snippet: [
+              "from copy import deepcopy",
+              "",
+              "poly_scaler = Pipeline([",
+              "    ('poly_features', PolynomialFeatures(degree=90, include_bias=False)),",
+              "    ('std_scaler', StandardScaler())",
+              "])",
+              "",
+              "X_train_poly_scaled = poly_scaler.fit_transform(X_train)",
+              "X_val_poly_scaled = poly_scaler.transform(X_val)",
+              "",
+              "sgd_reg = SGDRegressor(max_iter=1, tol=-np.infty, warm_start=True,  # warm_start=True: fit() 메서드가 호출될 때 처음부터 다시 시작하지 않고 이전 모델 파라미터에서 훈련을 이어간다.",
+              "                       penalty=None, learning_rate='constant', eta0=0.0005, random_state=42)",
+              "",
+              "minimum_val_error = float('inf')",
+              "best_epoch = None",
+              "best_model = None",
+              "for epoch in range(1000):",
+              "    sgd_reg.fit(X_train_poly_scaled, y_train)  # 중지된 곳에서 다시 시작합니다",
+              "    y_val_predict = sgd_reg.predict(X_val_poly_scaled)",
+              "    val_error = mean_squared_error(y_val, y_val_predict)",
+              "    if val_error < minimum_val_error:",
+              "        minimum_val_error = val_error",
+              "        best_epoch = epoch",
+              "        best_model = deepcopy(sgd_reg)",
+            ],
+          },
+          {
+            name: "graph",
+            snippet: [
+              "sgd_reg = SGDRegressor(max_iter=1, tol=-np.infty, warm_start=True,",
+              "         penalty=None, learning_rate='constant', eta0=0.0005, random_state=42)",
+              "",
+              "n_epochs = 500",
+              "train_errors, val_errors = [], []",
+              "for epoch in range(n_epochs):",
+              "    sgd_reg.fit(X_train_poly_scaled, y_train)",
+              "    y_train_predict = sgd_reg.predict(X_train_poly_scaled)",
+              "    y_val_predict = sgd_reg.predict(X_val_poly_scaled)",
+              "    train_errors.append(mean_squared_error(y_train, y_train_predict))",
+              "    val_errors.append(mean_squared_error(y_val, y_val_predict))",
+              "",
+              "best_epoch = np.argmin(val_errors)",
+              "best_val_rmse = np.sqrt(val_errors[best_epoch])",
+              "",
+              "plt.annotate('Best model',",
+              "            xy=(best_epoch, best_val_rmse),",
+              "            xytext=(best_epoch, best_val_rmse + 1),",
+              "            ha='center',",
+              "            arrowprops=dict(facecolor='black', shrink=0.05),",
+              "            fontsize=16,",
+              "            )",
+              "",
+              "best_val_rmse -= 0.03  # just to make the graph look better",
+              "plt.plot([0, n_epochs], [best_val_rmse, best_val_rmse], 'k:', linewidth=2)",
+              "plt.plot(np.sqrt(val_errors), 'b-', linewidth=3, label='Validation set')",
+              "plt.plot(np.sqrt(train_errors), 'r--', linewidth=2, label='Training set')",
+              "plt.legend(loc='upper right', fontsize=14)",
+              "plt.xlabel('Epoch', fontsize=14)",
+              "plt.ylabel('RMSE', fontsize=14)",
+              "plt.show()",
+            ],
+          },
+        ],
+      },
+      {
+        name: "linear_model",
+        "sub-menu": [
+          {
+            name: "LinearRegression",
+            snippet: [
+              "from sklearn.linear_model import LinearRegression",
+              "",
+              "lin_reg = LinearRegression()",
+              "lin_reg.fit(X_train, y_train)",
+              "# lin_reg.intercept_, lin_reg.coef_  # suffix underscore: 학습된 모델 파라미터",
+              "# lin_reg.predict(X_train)",
+            ],
+          },
+          {
+            name: "LogisticRegression",
+            snippet: [
+              "from sklearn.linear_model import LogisticRegression",
+              "",
+              "log_reg = LogisticRegression(random_state=42)",
+              "log_reg.fit(X_train, y_train)",
+              "log_reg.predict(X_train)",
+              "log_reg.predict_proba(X_train)",
+            ],
+          },
+          {
+            name: "SGDRegressor",
+            snippet: [
+              "from sklearn.linear_model import SGDRegressor",
+              "",
+              "sgd_reg = SGDRegressor(max_iter=1000, tol=1e-3, penalty=None, eta0=0.1, random_state=42)",
+              "# 최대 100번의 에포크(max_iter = 1000) 동안 실행되거나 한 에포크에서 0.001보다 적게 손실이 줄어들 때까지 실행(tol = 1e-3)",
+              "# penalty = None: 규제는 사용하지 않음",
+              "# 학습률 0.1(eta0 = 0.1)로 기본 학습 스케줄 사용",
+              "# penalty='l2' 인자를 추가하면 확률적 경사 하강법을 사용한 릿지 회귀를 수행한다",
+              "# penalty='l1' 인자를 추가하면 확률적 경사 하강법을 사용한 라쏘 회귀를 수행한다",
+              "# sgd_reg.intercept_, sgd_reg.coef_",
+              "sgd_reg.fit(X_train, y_train)",
+            ],
+          },
+          {
+            name: "SGDClassifier",
+            snippet: [
+              "from sklearn.linear_model import SGDClassifier",
+              "",
+              "sgd_clf = SGDClassifier()",
+            ],
+          },
+          {
+            name: "Ridge",
+            snippet: [
+              "from sklearn.linear_model import Ridge",
+              "",
+              "# 정규방정식을 사용한 릿지 회귀",
+              "ridge_reg = Ridge(alpha=1, solver='cholesky', random_state=42)  # cholesky: 숄레스키?",
+              "",
+              "# sag를 사용한 릿지 회귀",
+              "# ridge_reg = Ridge(alpha=1, solver='sag', random_state=42)  # 'sag': stochastic average gradient descent (확률적 평균 경사 하강법) - sgd의 변종",
+              "",
+              "ridge_reg.fix(X, y)",
+              "ridge_reg.predict(X)",
+            ],
+          },
+          {
+            name: "Lasso",
+            snippet: [
+              "from sklearn.linear_model import Lasso",
+              "",
+              "lasso_reg = lasso(alpha=0.1)",
+              "lasso_reg.fix(X, y)",
+              "lasso_reg.predict(X)",
+            ],
+          },
+          {
+            name: "ElasticNet",
+            snippet: [
+              "from sklearn.linear_model import ElasticNet",
+              "",
+              "elastic_net = ElasticNet(alpha=0.1, l1_ratio=0.5, random_state=42)",
+              "elastic_net.fix(X, y)",
+              "elastic_net.predict(X)",
+            ],
+          },
         ],
       },
       {
         name: "model_selection",
         "sub-menu": [
+          {
+            name: "train_test_split",
+            snippet: [
+              "from sklearn.model_selection import train_test_split",
+              "",
+              "X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42)",
+            ],
+          },
           {
             name: "cross_val_predict",
             snippet: [
@@ -160,6 +331,19 @@ require(["nbextensions/snippets_menu/main"], function (snippets_menu) {
               "",
               "scaler = StandardScaler()",
               "X_train_scaled = scaler.fit_transform(X_train.astype(np.float64))",
+            ],
+          },
+          {
+            name: "PolynomialFeatures",
+            snippet: [
+              "from sklearn.preprocessing import PolynomialFeatures",
+              "",
+              "poly_features = PolynomialFeatures(degree=2, include_bias=True)",
+              "X_poly = poly_features.fit_transform(X)",
+              "",
+              "# lin_reg = LinearRegression()",
+              "# lin_reg.fit(X_poly, y)",
+              "# lin_reg.intercept_, lin_reg.coef_",
             ],
           },
         ],
@@ -228,6 +412,14 @@ require(["nbextensions/snippets_menu/main"], function (snippets_menu) {
       {
         name: "metrics",
         "sub-menu": [
+          {
+            name: "mean_squared_error",
+            snippet: [
+              "from sklearn.metircs import mean_squared_error",
+              "",
+              "mean_squared_error(y_train, y_train_pred)",
+            ],
+          },
           {
             name: "confusion_matrix",
             snippet: [
