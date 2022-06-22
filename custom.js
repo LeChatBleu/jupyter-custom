@@ -352,6 +352,18 @@ require(["nbextensions/snippets_menu/main"], function (snippets_menu) {
         name: "svm",
         "sub-menu": [
           {
+            name: "LinearSVC",
+            snippet: [
+              "from sklearn.svm import LinearSVC",
+              "",
+              "svm_clf = Pipeline([",
+              "        ('scaler', StandardScaler()),",
+              "        ('linear_svc', LinearSVC(C=1, loss='hinge'))",
+              "    ])",
+              "svm_clf.fit(X, y)",
+            ],
+          },
+          {
             name: "SVC",
             snippet: [
               "from sklearn.svm import SVC",
@@ -359,6 +371,31 @@ require(["nbextensions/snippets_menu/main"], function (snippets_menu) {
               "svm_clf = SVC(gamma='auto', random_state=42)",
               "svm_clf.fit(X_train, y_train)",
               "svm_clf.predict(X_train)",
+            ],
+          },
+          {
+            name: "SVC  # with polynomial kernel trick",
+            snippet: [
+              "from sklearn.svm import SVC",
+              "",
+              "poly_kernel_svm_clf = Pipeline([",
+              "        ('scaler', StandardScaler()),",
+              "        ('svm_clf', SVC(kernel='poly', degree=3, coef0=1, C=5))",
+              "    ])",
+              "poly_kernel_svm_clf.fit(X, y)",
+              "# homl 212/953, 5.2.1 다항식 커널",
+            ],
+          },
+          {
+            name: "SVC  # with Gaussian rbf kernel trick",
+            snippet: [
+              "from sklearn.svm import SVC",
+              "",
+              "rbf_kernel_svm_clf = Pipeline([",
+              "        ('scaler', StandardScaler()),",
+              "        ('svm_clf', SVC(kernel='rbf', gamma=5, C=0.001))",
+              "    ])",
+              "rbf_kernel_svm_clf.fit(X, y)",
             ],
           },
         ],
