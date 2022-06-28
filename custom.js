@@ -115,6 +115,58 @@ Jupyter.keyboard_manager.command_shortcuts.add_shortcut('N', action_name);
 require(["nbextensions/snippets_menu/main"], function (snippets_menu) {
   console.log("Loading `snippets_menu` customizations from `custom.js`");
   var horizontal_line = "---";
+  var tips = {
+    name: "Tips",
+    "sub-menu": [
+      {
+        name: "이미지 삽입",
+        snippet: ["![](img/file_name)  # 마크다운에서 실행"],
+      },
+    ],
+  };
+  var pandas_custom = {
+    name: "pandas_custom",
+    "sub-menu": [
+      {
+        name: "First check",
+        snippet: [
+          "df.shape",
+          "df.head()",
+          "df.tail()",
+          "df.dtypes",
+          "df.info()",
+          "df.describe()",
+        ],
+      },
+      {
+        name: "Basic stats",
+        "sub-menu": [
+          {
+            name: "quantile",
+            snippet: ["bp_sr.quantile()", "bp_df.quantile()"],
+          },
+        ],
+      },
+    ],
+  };
+  var pydata_book = {
+    name: "pydata_book",
+    "sub-menu": [
+      {
+        name: "Setup",
+        snippet: [
+          "import numpy as np",
+          "import pandas as pd",
+          "PREVIOUS_MAX_ROWS = pd.options.display.max_rows",
+          "pd.options.display.max_rows = 20",
+          "np.random.seed(12345)",
+          "import matplotlib.pyplot as plt",
+          "plt.rc('figure', figsize=(10, 6))",
+          "np.set_printoptions(precision=4, suppress=True)",
+        ],
+      },
+    ],
+  };
   var scikit_learn = {
     name: "scikit_learn",
     "sub-menu": [
@@ -584,8 +636,14 @@ require(["nbextensions/snippets_menu/main"], function (snippets_menu) {
       },
     ],
   };
-  snippets_menu.options["menus"].push(snippets_menu.default_menus[0]);
+  snippets_menu.default_menus[0]["sub-menu"].splice(1, 1); // Remove Scipy
+  snippets_menu.default_menus[0]["sub-menu"].splice(2, 1); // Remove Sympy
+  snippets_menu.default_menus[0]["sub-menu"].splice(3, 3); // Remove Astropy, h5py, and numba (3, 3): 3 위치부터 3개를 지움
+  snippets_menu.options["menus"].push(snippets_menu.default_menus[0]); // Start with the remaining "Snippets" menu
   snippets_menu.options["menus"][0]["sub-menu"].push(horizontal_line);
+  snippets_menu.options["menus"][0]["sub-menu"].push(tips);
+  snippets_menu.options["menus"][0]["sub-menu"].push(pandas_custom);
+  snippets_menu.options["menus"][0]["sub-menu"].push(pydata_book);
   snippets_menu.options["menus"][0]["sub-menu"].push(scikit_learn);
   snippets_menu.options["menus"][0]["sub-menu"].push(my_favorites);
   console.log("Loaded `snippets_menu` customizations from `custom.js`");
